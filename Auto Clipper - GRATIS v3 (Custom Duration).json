@@ -1,0 +1,814 @@
+{
+  "name": "Auto Clipper - GRATIS v3 (Custom Duration)",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Clipper Video - Gratis",
+        "formDescription": "Auto Clipping, Auto Edit\nMenggunakan yt-dlp + Whisper + ffmpeg (100% Gratis)",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URL Video (YouTube atau URL lainnya)",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Skor Viral Minimum (0-100)",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Durasi Minimum Klip (detik)",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Durasi Maksimum Klip (detik)",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Generate Short Video"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        160
+      ],
+      "id": "2ccfe133-779e-44de-8eda-41df55cda6ea",
+      "name": "On form submission",
+      "webhookId": "630aef5c-ee0a-465a-8564-edd8dd40e383"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a1d5f864-6075-4c6a-9d32-cb1422265662",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "85aca0cc-78b7-4aa2-975d-9ee7cb005de4",
+      "name": "Get many videos"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfg-output-dir",
+              "name": "output_dir",
+              "value": "D:\\clips",
+              "type": "string"
+            },
+            {
+              "id": "cfg-video-url",
+              "name": "video_url",
+              "value": "={{ $json['URL Video (YouTube atau URL lainnya)'] || ('https://www.youtube.com/watch?v=' + $json.id) }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-viral-score",
+              "name": "viral_score",
+              "value": "={{ $json['Skor Viral Minimum (0-100)'] || 60 }}",
+              "type": "number"
+            },
+            {
+              "id": "cfg-min-dur",
+              "name": "min_dur",
+              "value": "={{ $json['Durasi Minimum Klip (detik)'] || 10 }}",
+              "type": "number"
+            },
+            {
+              "id": "cfg-max-dur",
+              "name": "max_dur",
+              "value": "={{ $json['Durasi Maksimum Klip (detik)'] || 90 }}",
+              "type": "number"
+            },
+            {
+              "id": "cfg-publish-limit",
+              "name": "publish_limit",
+              "value": "3",
+              "type": "number"
+            },
+            {
+              "id": "cfg-project-name",
+              "name": "project_name",
+              "value": "=Auto Clip {{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+              "type": "string"
+            },
+            {
+              "id": "cfg-server-url",
+              "name": "server_url",
+              "value": "http://host.docker.internal:5680/clip",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        160
+      ],
+      "id": "de57c55a-dcc7-412a-81e1-240e69eec2bd",
+      "name": "Configuration"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5680/clip",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $('Configuration').item.json.video_url }}"
+            },
+            {
+              "name": "output_dir",
+              "value": "={{ $('Configuration').item.json.output_dir }}"
+            },
+            {
+              "name": "min_dur",
+              "value": "={{ $('Configuration').item.json.min_dur }}"
+            },
+            {
+              "name": "max_dur",
+              "value": "={{ $('Configuration').item.json.max_dur }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 3600000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        432,
+        160
+      ],
+      "id": "72bce07c-b950-4cd1-acfa-f119570bf85c",
+      "name": "Run Auto Clipper"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-code-2000",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 2000,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        656,
+        160
+      ],
+      "id": "92a6e200-3331-4acc-aea3-54ab2ebe5bff",
+      "name": "Success?"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "videos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        432,
+        320
+      ],
+      "id": "821f15a1-62c3-4480-8270-2fe0a935f717",
+      "name": "Split Clips"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bYilqYnDEdkkIwFUMf2HEIItSBSFH1CQ4F7KJBC0zG4",
+          "mode": "list",
+          "cachedResultName": "Auto Clipping Video"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 961786042,
+          "mode": "list",
+          "cachedResultName": "Clip"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Pending",
+            "Viral Score": "={{ $json.viralScore }}",
+            "Clip URL": "={{ $json.videoUrl }}",
+            "Editor URL": "={{ $json.clipEditorUrl }}",
+            "Clip Title": "={{ $json.title }}",
+            "Viral Reason": "={{ $json.viralReason }}",
+            "Clip ID": "={{ $json.videoId }}",
+            "Clip Duration (ms)": "={{ $json.videoMsDuration }}",
+            "Project ID": "={{ $('Run Auto Clipper').item.json.projectId }}"
+          },
+          "matchingColumns": [
+            "Clip ID"
+          ],
+          "schema": [
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Project ID",
+              "displayName": "Project ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clip ID",
+              "displayName": "Clip ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clip URL",
+              "displayName": "Clip URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clip Duration (ms)",
+              "displayName": "Clip Duration (ms)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clip Title",
+              "displayName": "Clip Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Viral Score",
+              "displayName": "Viral Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Viral Reason",
+              "displayName": "Viral Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Editor URL",
+              "displayName": "Editor URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        480
+      ],
+      "id": "829af728-3071-4720-8fc5-d7cf3719da71",
+      "name": "Append Clips"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "filter-viral",
+              "leftValue": "={{ $json.viralScore }}",
+              "rightValue": "={{ $('Configuration').item.json.viral_score }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        480
+      ],
+      "id": "8df80f0a-cde3-4656-85cb-8c6febf54b76",
+      "name": "Filter by Viral Score"
+    },
+    {
+      "parameters": {
+        "maxItems": "={{ $('Configuration').item.json.publish_limit }}"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        656,
+        480
+      ],
+      "id": "b002ce77-7267-4673-909c-6992e5da9ee6",
+      "name": "Limit Clips"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "platform",
+              "value": "TikTok",
+              "type": "string"
+            },
+            {
+              "id": "t2",
+              "name": "status",
+              "value": "Siap Upload",
+              "type": "string"
+            },
+            {
+              "id": "t3",
+              "name": "clip_local_path",
+              "value": "={{ $json.videoUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "t4",
+              "name": "suggested_caption",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "t5",
+              "name": "viral_score",
+              "value": "={{ $json.viralScore }}",
+              "type": "number"
+            },
+            {
+              "id": "t6",
+              "name": "clip_duration_sec",
+              "value": "={{ $json.clipDurationSec }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        640
+      ],
+      "id": "4883ee8b-c55f-4cd3-a1a1-faebfa153f08",
+      "name": "Ready for TikTok"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "i1",
+              "name": "platform",
+              "value": "Instagram",
+              "type": "string"
+            },
+            {
+              "id": "i2",
+              "name": "status",
+              "value": "Siap Upload",
+              "type": "string"
+            },
+            {
+              "id": "i3",
+              "name": "clip_local_path",
+              "value": "={{ $json.videoUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "i4",
+              "name": "suggested_caption",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "i5",
+              "name": "viral_score",
+              "value": "={{ $json.viralScore }}",
+              "type": "number"
+            },
+            {
+              "id": "i6",
+              "name": "clip_duration_sec",
+              "value": "={{ $json.clipDurationSec }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        640
+      ],
+      "id": "b67c4bd8-efa0-47d7-a449-5a7f24608a46",
+      "name": "Ready for Instagram"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bYilqYnDEdkkIwFUMf2HEIItSBSFH1CQ4F7KJBC0zG4",
+          "mode": "list",
+          "cachedResultName": "Auto Clipping Video"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Source"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Success",
+            "Project ID": "={{ $json.projectId }}",
+            "Source URL": "={{ $('Configuration').item.json.video_url }}",
+            "Project Name": "={{ $('Configuration').item.json.project_name }}",
+            "Min Duration": "={{ $('Configuration').item.json.min_dur }}",
+            "Max Duration": "={{ $('Configuration').item.json.max_dur }}"
+          },
+          "matchingColumns": [
+            "Source URL"
+          ],
+          "schema": [
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source URL",
+              "displayName": "Source URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Project Name",
+              "displayName": "Project Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Min Duration",
+              "displayName": "Min Duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Max Duration",
+              "displayName": "Max Duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Project ID",
+              "displayName": "Project ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        0
+      ],
+      "id": "67de946f-6320-47b8-ae37-41d5d23781da",
+      "name": "Append Source (Success)"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bYilqYnDEdkkIwFUMf2HEIItSBSFH1CQ4F7KJBC0zG4",
+          "mode": "list",
+          "cachedResultName": "Auto Clipping Video"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Source"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Failed",
+            "Source URL": "={{ $('Configuration').item.json.video_url }}",
+            "Error Message": "={{ $json.errMsg }}"
+          },
+          "matchingColumns": [
+            "Source URL"
+          ],
+          "schema": [
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source URL",
+              "displayName": "Source URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        880,
+        160
+      ],
+      "id": "b8b1edb0-2aef-48eb-b719-faf8339e255e",
+      "name": "Append Source (Failed)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many videos": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Run Auto Clipper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Auto Clipper": {
+      "main": [
+        [
+          {
+            "node": "Success?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success?": {
+      "main": [
+        [
+          {
+            "node": "Append Source (Success)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Clips",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append Source (Failed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Clips": {
+      "main": [
+        [
+          {
+            "node": "Append Clips",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter by Viral Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter by Viral Score": {
+      "main": [
+        [
+          {
+            "node": "Limit Clips",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit Clips": {
+      "main": [
+        [
+          {
+            "node": "Ready for TikTok",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Ready for Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e343678d-4b8a-4c94-a1bb-84cd0d5d62a7",
+  "meta": {
+    "instanceId": "603cf5d12ef784d08a6c32dc5e19a91f0a1c585d32fea7ffc7282e83bfe2d998"
+  },
+  "id": "AjL8U5W0Q5MA77yE",
+  "tags": []
+}
