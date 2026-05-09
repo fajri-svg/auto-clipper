@@ -1,10 +1,25 @@
 {
-  "name": "Auto Clipper - GRATIS v3 (Custom Duration)",
+  "name": "Auto Clipper - GRATIS v4 (Facebook Auto Post)",
   "nodes": [
     {
       "parameters": {
+        "content": "## Auto Clipper v4 — Facebook Auto Post\n\n### Yang Baru:\n- Auto post video ke Facebook Page OrcaClip\n- Caption otomatis berisi judul klip + credit sumber\n\n### Setup:\n1. Isi `fb_page_id` dan `fb_page_token` di node **Configuration**\n2. Pastikan `clipper_server.py` versi terbaru (v3) sudah berjalan\n3. Token berlaku ~60 hari — perbarui jika expired",
+        "height": 280,
+        "width": 500
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "28116385-9a64-4a48-a8a2-9fb4ddf5e5c0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
         "formTitle": "AI Clipper Video - Gratis",
-        "formDescription": "Auto Clipping, Auto Edit\nMenggunakan yt-dlp + Whisper + ffmpeg (100% Gratis)",
+        "formDescription": "Auto Clipping, Auto Edit, Auto Post ke Facebook!\nMenggunakan yt-dlp + Whisper + ffmpeg (100% Gratis)",
         "formFields": {
           "values": [
             {
@@ -30,18 +45,18 @@
         },
         "options": {
           "appendAttribution": false,
-          "buttonLabel": "Generate Short Video"
+          "buttonLabel": "Generate & Post ke Facebook!"
         }
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.3,
       "position": [
-        0,
-        160
+        800,
+        192
       ],
-      "id": "2ccfe133-779e-44de-8eda-41df55cda6ea",
+      "id": "09677d0b-4986-4bbe-a15d-93594e671338",
       "name": "On form submission",
-      "webhookId": "630aef5c-ee0a-465a-8564-edd8dd40e383"
+      "webhookId": "fbc36cfe-3fba-4cc4-b59c-29d38b41d3f5"
     },
     {
       "parameters": {
@@ -54,10 +69,10 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        0,
-        0
+        800,
+        32
       ],
-      "id": "a1d5f864-6075-4c6a-9d32-cb1422265662",
+      "id": "69b4fcb9-34ac-41f9-83cb-d599b87520e0",
       "name": "Schedule Trigger"
     },
     {
@@ -69,10 +84,10 @@
       "type": "n8n-nodes-base.youTube",
       "typeVersion": 1,
       "position": [
-        208,
-        0
+        1008,
+        32
       ],
-      "id": "85aca0cc-78b7-4aa2-975d-9ee7cb005de4",
+      "id": "71c91911-e849-4dfe-bf66-c000348af85d",
       "name": "Get many videos"
     },
     {
@@ -112,7 +127,7 @@
             {
               "id": "cfg-publish-limit",
               "name": "publish_limit",
-              "value": "3",
+              "value": 3,
               "type": "number"
             },
             {
@@ -126,6 +141,18 @@
               "name": "server_url",
               "value": "http://host.docker.internal:5680/clip",
               "type": "string"
+            },
+            {
+              "id": "cfg-fb-page-id",
+              "name": "fb_page_id",
+              "value": "1041901535683978",
+              "type": "string"
+            },
+            {
+              "id": "cfg-fb-token",
+              "name": "fb_page_token",
+              "value": "EAALXv5ycP1MBRS19GjTnnp6c8LgLKZCk5TKXq9fj5l5fZCB8yg9ZCDRXBjEnZAtic8QUFEXK1LNvRJp3ZBLOYrz9ZA81FpZAZBMhkcBR2NRjIUaSbloKTkeUIu8e8QNOSVW0I3K8ZAyFTnXy0KyO6r6FglPwZASSeIruvel615FBD6AO0QbZAWQ6BoZC2PfkQPnBokaBbmbtdw6ZAWz0wfdZBIHM57ac3n",
+              "type": "string"
             }
           ]
         },
@@ -134,10 +161,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        208,
-        160
+        1008,
+        192
       ],
-      "id": "de57c55a-dcc7-412a-81e1-240e69eec2bd",
+      "id": "f50600d2-991d-4813-84c0-f5d316e8896c",
       "name": "Configuration"
     },
     {
@@ -181,10 +208,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        432,
-        160
+        1232,
+        192
       ],
-      "id": "72bce07c-b950-4cd1-acfa-f119570bf85c",
+      "id": "f681e23f-d432-4b4b-9cc1-688e63b5eac5",
       "name": "Run Auto Clipper"
     },
     {
@@ -214,10 +241,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        656,
-        160
+        1456,
+        192
       ],
-      "id": "92a6e200-3331-4acc-aea3-54ab2ebe5bff",
+      "id": "676f903a-34c7-4dd6-ae67-519a0e08ecbd",
       "name": "Success?"
     },
     {
@@ -228,11 +255,182 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        432,
-        320
+        1232,
+        352
       ],
-      "id": "821f15a1-62c3-4480-8270-2fe0a935f717",
+      "id": "57098882-c825-4a49-a911-3ce74ec484ad",
       "name": "Split Clips"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "filter-viral",
+              "leftValue": "={{ $json.viralScore }}",
+              "rightValue": "={{ $('Configuration').item.json.viral_score }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1232,
+        512
+      ],
+      "id": "173a5db4-a7ee-4370-84a1-6a502a796270",
+      "name": "Filter by Viral Score"
+    },
+    {
+      "parameters": {
+        "maxItems": "={{ $('Configuration').item.json.publish_limit }}"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        512
+      ],
+      "id": "32f79696-3edd-4e12-a82e-412129fbca28",
+      "name": "Limit Clips"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/{{ $('Configuration').item.json.fb_page_id }}/videos",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "source",
+              "inputDataFieldName": "videoData"
+            },
+            {
+              "name": "description",
+              "value": "={{ $json.title }}\n\n📌 Credit: {{ $('Configuration').item.json.video_url }}\n\n#viral #shorts #podcast #clip"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $('Configuration').item.json.fb_page_token }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        512
+      ],
+      "id": "0fea834f-ce90-41a8-b321-0e35677927e4",
+      "name": "Post to Facebook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fb-status",
+              "name": "facebook_status",
+              "value": "={{ $json.id ? 'Posted' : 'Failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "fb-post-id",
+              "name": "facebook_post_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "fb-clip-title",
+              "name": "clip_title",
+              "value": "={{ $('Limit Clips').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "fb-score",
+              "name": "viral_score",
+              "value": "={{ $('Limit Clips').item.json.viralScore }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1904,
+        512
+      ],
+      "id": "0e16ed19-daaf-428a-bc30-643774bd2de3",
+      "name": "Facebook Result"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "tiktok-status",
+              "name": "status",
+              "value": "Siap Upload TikTok",
+              "type": "string"
+            },
+            {
+              "id": "tiktok-path",
+              "name": "clip_local_path",
+              "value": "={{ $json.videoUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "tiktok-title",
+              "name": "suggested_caption",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "tiktok-score",
+              "name": "viral_score",
+              "value": "={{ $json.viralScore }}",
+              "type": "number"
+            },
+            {
+              "id": "tiktok-dur",
+              "name": "clip_duration_sec",
+              "value": "={{ $json.clipDurationSec }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        672
+      ],
+      "id": "eda2cf20-154a-4a8f-97eb-fb8702517446",
+      "name": "Ready for TikTok"
     },
     {
       "parameters": {
@@ -354,164 +552,12 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        208,
-        480
+        1008,
+        512
       ],
-      "id": "829af728-3071-4720-8fc5-d7cf3719da71",
-      "name": "Append Clips"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "filter-viral",
-              "leftValue": "={{ $json.viralScore }}",
-              "rightValue": "={{ $('Configuration').item.json.viral_score }}",
-              "operator": {
-                "type": "number",
-                "operation": "gte"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "looseTypeValidation": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.2,
-      "position": [
-        432,
-        480
-      ],
-      "id": "8df80f0a-cde3-4656-85cb-8c6febf54b76",
-      "name": "Filter by Viral Score"
-    },
-    {
-      "parameters": {
-        "maxItems": "={{ $('Configuration').item.json.publish_limit }}"
-      },
-      "type": "n8n-nodes-base.limit",
-      "typeVersion": 1,
-      "position": [
-        656,
-        480
-      ],
-      "id": "b002ce77-7267-4673-909c-6992e5da9ee6",
-      "name": "Limit Clips"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "t1",
-              "name": "platform",
-              "value": "TikTok",
-              "type": "string"
-            },
-            {
-              "id": "t2",
-              "name": "status",
-              "value": "Siap Upload",
-              "type": "string"
-            },
-            {
-              "id": "t3",
-              "name": "clip_local_path",
-              "value": "={{ $json.videoUrl }}",
-              "type": "string"
-            },
-            {
-              "id": "t4",
-              "name": "suggested_caption",
-              "value": "={{ $json.title }}",
-              "type": "string"
-            },
-            {
-              "id": "t5",
-              "name": "viral_score",
-              "value": "={{ $json.viralScore }}",
-              "type": "number"
-            },
-            {
-              "id": "t6",
-              "name": "clip_duration_sec",
-              "value": "={{ $json.clipDurationSec }}",
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        544,
-        640
-      ],
-      "id": "4883ee8b-c55f-4cd3-a1a1-faebfa153f08",
-      "name": "Ready for TikTok"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "i1",
-              "name": "platform",
-              "value": "Instagram",
-              "type": "string"
-            },
-            {
-              "id": "i2",
-              "name": "status",
-              "value": "Siap Upload",
-              "type": "string"
-            },
-            {
-              "id": "i3",
-              "name": "clip_local_path",
-              "value": "={{ $json.videoUrl }}",
-              "type": "string"
-            },
-            {
-              "id": "i4",
-              "name": "suggested_caption",
-              "value": "={{ $json.title }}",
-              "type": "string"
-            },
-            {
-              "id": "i5",
-              "name": "viral_score",
-              "value": "={{ $json.viralScore }}",
-              "type": "number"
-            },
-            {
-              "id": "i6",
-              "name": "clip_duration_sec",
-              "value": "={{ $json.clipDurationSec }}",
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        768,
-        640
-      ],
-      "id": "b67c4bd8-efa0-47d7-a449-5a7f24608a46",
-      "name": "Ready for Instagram"
+      "id": "fb62668e-315e-434a-a062-8419e278dd3a",
+      "name": "Append Clips",
+      "disabled": true
     },
     {
       "parameters": {
@@ -603,11 +649,12 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        432,
-        0
+        1232,
+        32
       ],
-      "id": "67de946f-6320-47b8-ae37-41d5d23781da",
-      "name": "Append Source (Success)"
+      "id": "f81118b3-35b2-446c-83e7-58143e614e8e",
+      "name": "Append Source (Success)",
+      "disabled": true
     },
     {
       "parameters": {
@@ -669,11 +716,33 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        880,
-        160
+        1680,
+        192
       ],
-      "id": "b8b1edb0-2aef-48eb-b719-faf8339e255e",
-      "name": "Append Source (Failed)"
+      "id": "ec8758b3-b998-4f42-b915-0f64c68e000c",
+      "name": "Append Source (Failed)",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:5680/serve?path={{ encodeURIComponent($json.videoUrl) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "videoData"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1568,
+        512
+      ],
+      "id": "1b2c824f-4e1c-490f-b733-bcc43ff04045",
+      "name": "Fetch Video Binary"
     }
   ],
   "pinData": {},
@@ -787,12 +856,34 @@
       "main": [
         [
           {
-            "node": "Ready for TikTok",
+            "node": "Fetch Video Binary",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Ready for Instagram",
+            "node": "Ready for TikTok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to Facebook": {
+      "main": [
+        [
+          {
+            "node": "Facebook Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Video Binary": {
+      "main": [
+        [
+          {
+            "node": "Post to Facebook",
             "type": "main",
             "index": 0
           }
@@ -805,10 +896,10 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "e343678d-4b8a-4c94-a1bb-84cd0d5d62a7",
+  "versionId": "b29e0e86-1097-4a88-81df-e8300dc2d8b1",
   "meta": {
     "instanceId": "603cf5d12ef784d08a6c32dc5e19a91f0a1c585d32fea7ffc7282e83bfe2d998"
   },
-  "id": "AjL8U5W0Q5MA77yE",
+  "id": "Gp1i6G01UQ7jSH9j",
   "tags": []
 }
