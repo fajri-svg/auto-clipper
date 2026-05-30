@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>OrcaClip — AI Video Clipper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0b0d11;
+  --surface:#13161d;
+  --border:#1e2330;
+  --accent:#00e5b0;
+  --accent2:#ff6b35;
+  --text:#e8eaf0;
+  --muted:#5a6070;
+  --danger:#ff4d6d;
+}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:32px 16px;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,229,176,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%,rgba(255,107,53,.06) 0%,transparent 60%);
+}
+.wrap{width:100%;max-width:480px}
+
+/* Header */
+.logo{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:32px;
+}
+.logo-icon{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  overflow:hidden;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#0d1016;
+  border:1px solid rgba(255,255,255,.08);
+}
+.logo-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.logo-text{
+  font-family:'Space Mono',monospace;
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+  color:#ffffff;
+}
+
+.logo-text span{
+  color:#27e0c7;
+}
+.logo-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* Card */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+}
+
+/* Field */
+.field{margin-bottom:20px}
+label{
+  display:block;
+  font-size:12px;font-weight:600;
+  color:var(--muted);
+  letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+input[type=text],input[type=url],input[type=number]{
+  width:100%;
+  background:#0d1016;
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  padding:10px 14px;
+  outline:none;
+  transition:border-color .2s;
+}
+input[type=text]:focus,input[type=url]:focus,input[type=number]:focus{
+  border-color:var(--accent);
+}
+input[type=number]::-webkit-inner-spin-button{opacity:.3}
+
+/* Grid */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Slider */
+.slider-wrap{position:relative;padding-top:4px}
+.slider-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.slider-val{
+  font-family:'Space Mono',monospace;
+  font-size:20px;font-weight:700;
+  color:var(--accent);
+}
+.slider-desc{font-size:11px;color:var(--muted)}
+input[type=range]{
+  width:100%;height:4px;
+  -webkit-appearance:none;
+  background:linear-gradient(to right,var(--accent) var(--pct,75%),var(--border) var(--pct,75%));
+  border-radius:2px;outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:18px;height:18px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,229,176,.2);
+  transition:box-shadow .2s;
+}
+input[type=range]::-webkit-slider-thumb:hover{
+  box-shadow:0 0 0 6px rgba(0,229,176,.25);
+}
+.slider-ticks{
+  display:flex;justify-content:space-between;
+  font-size:10px;color:var(--muted);
+  margin-top:6px;font-family:'Space Mono',monospace;
+}
+
+/* Divider */
+.divider{
+  border:none;border-top:1px solid var(--border);
+  margin:24px 0;
+}
+
+/* Toggle row */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;
+  background:#0d1016;
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:12px;
+  transition:border-color .2s;
+}
+.toggle-row:has(input:checked){border-color:var(--accent);}
+.toggle-label{display:flex;flex-direction:column;gap:2px}
+.toggle-label strong{font-size:14px;font-weight:500}
+.toggle-label span{font-size:11px;color:var(--muted)}
+
+/* Toggle switch */
+.switch{position:relative;width:42px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch-track{
+  position:absolute;inset:0;
+  background:#1e2330;border-radius:12px;
+  cursor:pointer;transition:background .25s;
+}
+.switch input:checked + .switch-track{background:var(--accent);}
+.switch-thumb{
+  position:absolute;
+  top:3px;left:3px;
+  width:18px;height:18px;
+  background:#fff;border-radius:50%;
+  pointer-events:none;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+.switch input:checked ~ .switch-thumb{transform:translateX(18px);}
+
+/* YT badge */
+.yt-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;letter-spacing:.06em;
+  background:rgba(255,107,53,.12);color:var(--accent2);
+  border:1px solid rgba(255,107,53,.25);
+  border-radius:4px;padding:2px 6px;
+  margin-left:8px;
+}
+
+/* Platform row */
+/* Platform */
+.platform-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.platform-card{
+  position:relative;
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  padding:10px 12px;
+
+  background:#0d1016;
+  border:1px solid var(--border);
+  border-radius:12px;
+
+  cursor:pointer;
+  user-select:none;
+
+  min-height:64px;
+
+  transition:
+    border-color .25s,
+    background .25s,
+    transform .2s;
+}
+
+.platform-card:hover{
+  transform:translateY(-2px);
+  border-color:#2b3345;
+}
+
+.platform-card input{
+  display:none;
+}
+
+/* Active */
+.platform-card:has(input:checked){
+  border-color:#27e0c7;
+  background:rgba(39,224,199,.05);
+}
+
+/* Icon */
+.platform-icon{
+  width:40px;
+  height:40px;
+
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:18px;
+
+  flex-shrink:0;
+}
+
+.platform-icon i{
+  line-height:1;
+}
+
+/* Facebook */
+.platform-icon.fb{
+  background:#1877f2;
+  color:#fff;
+
+  box-shadow:
+    0 4px 14px rgba(24,119,242,.35);
+}
+
+/* Instagram */
+.platform-icon.ig{
+  background:linear-gradient(
+    135deg,
+    #f9ce34,
+    #ee2a7b,
+    #6228d7
+  );
+
+  color:#fff;
+
+  box-shadow:
+    0 4px 14px rgba(225,48,108,.35);
+}
+
+/* Platform text */
+.platform-name{
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+}
+
+/* Checkmark */
+.checkmark{
+  margin-left:auto;
+
+  width:22px;
+  height:22px;
+
+  border-radius:6px;
+
+  background:#1a1f2b;
+  border:1px solid #2a3140;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:12px;
+  font-weight:700;
+
+  color:transparent;
+
+  transition:all .25s;
+}
+
+/* Checked state */
+.platform-card:has(input:checked) .checkmark{
+  background:#27e0c7;
+  border-color:#27e0c7;
+  color:#000;
+}
+
+/* Submit */
+.btn{
+  width:100%;padding:14px;
+  background:var(--accent);color:#000;
+  border:none;border-radius:10px;
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .2s,transform .1s;
+  margin-top:24px;
+}
+.btn:hover{opacity:.9}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Progress */
+.progress-box{
+  margin-top:20px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  display:none;
+}
+.progress-box.show{display:block}
+.progress-header{
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;
+}
+.spinner{
+  width:14px;height:14px;
+  border:2px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.log-area{
+  background:#080a0e;
+  padding:12px 16px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;color:#4a5568;
+  max-height:200px;overflow-y:auto;
+  line-height:1.7;
+}
+.log-area .ok{color:var(--accent)}
+.log-area .err{color:var(--danger)}
+.log-area .info{color:#6b7280}
+
+/* Result clips */
+.clips-grid{
+  display:flex;flex-direction:column;gap:8px;
+  padding:12px;
+  display:none;
+}
+.clips-grid.show{display:flex}
+.clip-card{
+  background:#0d1016;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px 14px;
+  display:flex;align-items:center;gap:12px;
+}
+.clip-score{
+  font-family:'Space Mono',monospace;
+  font-size:13px;font-weight:700;
+  color:var(--accent);width:36px;flex-shrink:0;
+}
+.clip-info{flex:1;min-width:0}
+.clip-title{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clip-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.clip-status{display:flex;gap:6px;flex-shrink:0}
+.badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
+.badge.ok{background:rgba(0,229,176,.12);color:var(--accent)}
+.badge.skip{background:rgba(90,96,112,.12);color:var(--muted)}
+.badge.err{background:rgba(255,77,109,.12);color:var(--danger)}
+
+/* ── Server status bar ── */
+.srv-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0d1016;border:1px solid var(--border);border-radius:10px;margin-bottom:18px}
+.srv-dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
+.srv-dot.online{background:var(--accent);box-shadow:0 0 7px rgba(0,229,176,.5)}
+.srv-dot.offline{background:var(--danger)}
+.srv-info{flex:1;min-width:0}
+.srv-info strong{font-size:13px;font-weight:600;display:block}
+.srv-info span{font-size:11px;color:var(--muted)}
+.btn-srv{display:flex;align-items:center;gap:6px;background:rgba(0,229,176,.12);color:var(--accent);border:1px solid rgba(0,229,176,.25);border-radius:7px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;flex-shrink:0}
+.btn-srv:hover{background:rgba(0,229,176,.2)}
+.btn-srv.loading{opacity:.5;pointer-events:none}
+
+/* ── Schedule toggle ── */
+.toggle-row.sched{margin-top:8px}
+.sched-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(90,96,112,.18);color:var(--muted);margin-left:8px;vertical-align:middle;transition:all .2s}
+.sched-badge.on{background:rgba(0,229,176,.15);color:var(--accent)}
+
+/* ── Step indicator ── */
+.steps-bar{display:flex;align-items:center;gap:0;margin-bottom:18px}
+.step-pill{font-size:11px;font-weight:500;padding:5px 13px;border-radius:20px;white-space:nowrap}
+.step-pill.done{background:rgba(0,229,176,.12);color:var(--accent)}
+.step-pill.active{background:rgba(0,229,176,.22);color:var(--accent);font-weight:700}
+.step-pill.wait{color:var(--muted)}
+.step-line{flex:1;height:1px;background:var(--border);min-width:6px}
+
+/* ── Clip schedule card ── */
+.scard{border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;background:#0d1016}
+.scard-head{display:flex;align-items:flex-start;gap:10px;padding:13px 15px;cursor:pointer;user-select:none}
+.scard-head:hover{background:rgba(255,255,255,.02)}
+.scard-body{padding:0 15px 15px;display:none}
+.scard-body.open{display:block}
+.sc-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:13px 0 7px}
+.sc-ta{width:100%;background:#080a0e;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.6;padding:9px 11px;resize:vertical;outline:none;box-sizing:border-box;min-height:80px;transition:border-color .2s}
+.sc-ta:focus{border-color:var(--accent)}
+.char-info{font-size:10px;color:var(--muted);text-align:right;margin-top:3px}
+.tags-box{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px;background:#080a0e;border:1px solid var(--border);border-radius:8px;min-height:36px;cursor:text;align-items:center}
+.tchip{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(0,229,176,.1);color:var(--accent)}
+.tchip .trm{cursor:pointer;opacity:.5;font-size:15px;line-height:1;margin-left:1px}
+.tchip .trm:hover{opacity:1}
+.tinp{border:none;outline:none;background:transparent;font-size:12px;color:var(--text);font-family:inherit;min-width:90px;flex:1}
+.plat-row{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:8px;border:1px solid var(--border);margin-bottom:6px;background:#080a0e;flex-wrap:wrap}
+.plat-ico{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px}
+.plat-ico.fb{background:rgba(24,119,242,.15);color:#1877f2}
+.plat-ico.ig{background:rgba(225,48,108,.15);color:#e1306c}
+.dt-grp{display:flex;gap:5px;margin-left:auto}
+.dt-grp input{font-size:11px;padding:4px 7px;border-radius:6px;border:1px solid var(--border);background:#13161d;color:var(--text);outline:none;transition:border-color .2s}
+.dt-grp input:focus{border-color:var(--accent)}
+.dt-grp input[type=date]{width:118px}
+.dt-grp input[type=date]::-webkit-calendar-picker-indicator{
+  filter:invert(1) brightness(1.8);cursor:pointer;opacity:.8;
+}
+/* Custom 24h time picker */
+.time-24h{display:flex;align-items:center;gap:2px}
+.time-24h select{
+  font-size:11px;padding:4px 4px;border-radius:6px;
+  border:1px solid var(--border);background:#13161d;
+  color:var(--text);outline:none;cursor:pointer;
+  transition:border-color .2s;
+  -webkit-appearance:none;appearance:none;
+  text-align:center;
+}
+.time-24h select:focus{border-color:var(--accent)}
+.time-24h .t-sep{font-size:12px;font-weight:700;color:var(--muted);padding:0 1px}
+.sc-div{border:none;border-top:1px solid var(--border);margin:11px 0}
+.chev{font-size:14px;color:var(--muted);margin-left:auto;transition:transform .2s;flex-shrink:0}
+
+/* ── Progress Timeline ── */
+.progress-timeline{
+  display:flex;flex-direction:column;gap:0;
+  margin:14px 0;
+}
+.tl-step{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 0;position:relative;
+}
+.tl-step:not(:last-child)::after{
+  content:'';position:absolute;left:15px;top:36px;
+  width:2px;height:calc(100% - 16px);
+  background:var(--border);
+}
+.tl-step.active::after,.tl-step.done::after{background:var(--accent);}
+.tl-icon{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;border:2px solid var(--border);
+  background:#080a0e;position:relative;z-index:1;transition:all .3s;
+}
+.tl-step.active .tl-icon{border-color:var(--accent);background:rgba(0,229,176,.12);animation:pulse 1.5s infinite;}
+.tl-step.done .tl-icon{border-color:var(--accent);background:var(--accent);color:#000;}
+.tl-step.error .tl-icon{border-color:#ff4d4d;background:rgba(255,77,77,.15);color:#ff4d4d;}
+.tl-step.pending .tl-icon{opacity:.4;}
+.tl-body{flex:1;min-width:0;padding-top:4px;}
+.tl-label{font-size:13px;font-weight:600;margin-bottom:3px;}
+.tl-msg{font-size:11px;color:var(--muted);line-height:1.4;word-break:break-all;}
+.tl-step.active .tl-label{color:var(--accent);}
+.tl-step.error .tl-label{color:#ff4d4d;}
+.progress-bar-wrap{height:4px;background:var(--border);border-radius:99px;margin:12px 0 4px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .5s ease;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,176,.4)}50%{box-shadow:0 0 0 6px rgba(0,229,176,0)}}
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;padding:20px;
+}
+.modal-overlay.hidden{display:none}
+.modal-box{
+  background:#0d1016;border:1px solid var(--border);
+  border-radius:16px;padding:24px;max-width:420px;width:100%;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.modal-icon{font-size:32px;margin-bottom:12px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.modal-msg{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.modal-steps{
+  background:#080a0e;border-radius:8px;padding:12px 14px;
+  font-size:12px;color:var(--text);line-height:1.8;
+  margin-bottom:16px;border:1px solid var(--border);
+}
+.modal-steps a{color:var(--accent);text-decoration:none}
+.modal-steps a:hover{text-decoration:underline}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end}
+.modal-btn{
+  padding:8px 16px;border-radius:8px;border:none;
+  font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+}
+.modal-btn.primary{background:var(--accent);color:#000}
+.modal-btn.secondary{background:#1a1f2e;color:var(--muted);border:1px solid var(--border)}
+.token-section{margin-top:4px}
+.token-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:10px 14px;border-radius:10px;
+  background:#0d1016;border:1px solid var(--border);
+  font-size:12px;font-weight:500;color:var(--muted);
+  transition:border-color .2s;user-select:none;
+}
+.token-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.token-toggle .t-saved{font-size:10px;color:#00c97a;background:rgba(0,201,122,.1);padding:2px 8px;border-radius:99px}
+.token-body{
+  display:none;margin-top:8px;padding:14px;
+  background:#0d1016;border:1px solid var(--border);border-radius:10px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.token-body.open{display:flex}
+.token-body.closed{display:none}
+.token-field{display:flex;flex-direction:column;gap:4px}
+.token-field label{font-size:11px;color:var(--muted);font-weight:500}
+.token-field input{
+  background:#080a0e;border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;color:var(--text);
+  font-size:12px;font-family:'Space Mono',monospace;outline:none;
+  transition:border-color .2s;width:100%;
+}
+.token-field input:focus{border-color:var(--accent)}
+.token-field input::placeholder{color:var(--muted);font-family:'DM Sans',sans-serif}
+.token-save-btn{
+  font-size:12px;padding:7px 14px;border-radius:8px;
+  border:1px solid var(--accent);background:rgba(0,229,176,.08);
+  color:var(--accent);cursor:pointer;font-family:inherit;font-weight:600;
+  transition:all .2s;align-self:flex-end;
+}
+.token-save-btn:hover{background:rgba(0,229,176,.18)}
+.clip-sel-wrap{display:flex;align-items:center;flex-shrink:0}
+.clip-sel-cb{
+  appearance:none;-webkit-appearance:none;
+  width:18px;height:18px;border-radius:5px;
+  border:1.5px solid var(--muted);background:#080a0e;
+  cursor:pointer;position:relative;transition:all .2s;flex-shrink:0;
+}
+.clip-sel-cb:checked{background:var(--accent);border-color:var(--accent);}
+.clip-sel-cb:checked::after{
+  content:'✓';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:11px;font-weight:700;color:#000;line-height:1;
+}
+.scard.unselected{opacity:.45}
+.scard.unselected .scard-head{background:rgba(0,0,0,.1)}
+.sel-all-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:12px;color:var(--muted)}
+.sel-all-row button{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:#0d1016;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s}
+.sel-all-row button:hover{border-color:var(--accent);color:var(--accent)}
+.sel-count{font-family:'Space Mono',monospace;color:var(--accent);font-weight:700}
+
+/* ── Confirm button ── */
+.btn-retry{
+  width:100%;padding:10px 14px;border-radius:10px;border:none;
+  background:rgba(0,229,176,.12);color:var(--accent);
+  font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+  border:1px solid rgba(0,229,176,.25);
+}
+.btn-retry:hover{background:rgba(0,229,176,.22);border-color:var(--accent)}
+.btn-retry.secondary{
+  background:#0d1016;color:var(--muted);
+  border-color:var(--border);
+}
+.btn-retry.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-confirm:hover{opacity:.85}
+.btn-confirm:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── Step 3 results ── */
+.res-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:8px;border:1px solid var(--border);margin-bottom:7px;font-size:12px;background:#0d1016}
+.ri{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700}
+.ri.ok{background:rgba(0,229,176,.15);color:var(--accent)}
+.ri.err{background:rgba(255,77,109,.15);color:var(--danger)}
+.step-wrap{margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;display:none}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="logo.jpg" alt="Logo" class="logo-img" />
+    </div>
+    <div>
+        <div class="logo-text">
+          Orca<span>Clip</span>
+        </div>
+      <div class="logo-sub">AI Video Clipper · yt-dlp + Whisper + ffmpeg</div>
+    </div>
+  </div>
+
+  <div class="srv-bar">
+    <div class="srv-dot offline" id="srv-dot"></div>
+    <div class="srv-info">
+      <strong id="srv-txt">Mengecek server...</strong>
+      <span id="srv-sub">Buka form ini setelah server aktif</span>
+    </div>
+    <button class="btn-srv" id="btn-srv" onclick="startServer()">⚡ Start Server</button>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>URL Video YouTube</label>
+      <input type="url" id="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off"/>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Min durasi (detik)</label>
+        <input type="number" id="min_dur" value="80" min="10" max="300"/>
+      </div>
+      <div class="field">
+        <label>Max durasi (detik)</label>
+        <input type="number" id="max_dur" value="160" min="30" max="600"/>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Viral score minimum</label>
+      <div class="slider-wrap">
+        <div class="slider-header">
+          <div>
+            <div class="slider-val" id="score-val">75</div>
+            <div class="slider-desc" id="score-desc">Hanya klip bagus</div>
+          </div>
+        </div>
+        <input type="range" id="viral_score" min="0" max="100" step="5" value="75" oninput="updateSlider(this)"/>
+        <div class="slider-ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="field">
+      <label>Mode</label>
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <strong>YT Mode <span class="yt-badge">⬇ Download saja</span></strong>
+          <span>Skip upload FB & IG — cukup simpan klip & .txt</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="yt_mode" onchange="toggleYtMode(this)"/>
+          <div class="switch-track"></div>
+          <div class="switch-thumb"></div>
+        </label>
+      </div>
+      <!-- MEGA tema selector — muncul saat YT Mode aktif -->
+      <div id="mega-tema-row" style="display:none;margin-top:8px;padding:12px 14px;background:#080a0e;border:1px solid var(--border);border-radius:10px;gap:10px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--muted);flex-shrink:0">☁️ Upload ke MEGA:</span>
+        <select id="mega_tema" style="flex:1;min-width:160px;background:#0d1016;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit;outline:none;cursor:pointer">
+          <option value="">— Tidak upload ke MEGA —</option>
+          <option value="gaming">🎮 Gaming → /OrcaClip/Gaming</option>
+          <option value="ekonomi_edukasi_dakwah">📚 Ekonomi, Edukasi, Dakwah → /OrcaClip/Ekonom, Edukasi, Dakwah</option>
+        </select>
+      </div>
+      <div class="toggle-row sched" id="sched-row">
+        <div class="toggle-label">
+          <strong>Jadwal per Klip <span class="sched-badge" id="sched-badge">Nonaktif</span></strong>
+          <span id="sched-sub">Aktifkan untuk atur jadwal upload per klip ke Meta</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="sched_mode" onchange="toggleSchedMode(this)"/>
+          <div class="switch-track"></div>
+          <div class="switch-thumb"></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="field" id="platform-section">
+  <label>Upload Ke Platform</label>
+
+  <div class="platform-grid">
+
+    <!-- Facebook -->
+    <label class="platform-card">
+      <input type="checkbox" id="upload_fb" checked />
+
+      <div class="platform-icon fb">
+        <i class="fa-brands fa-facebook-f"></i>
+      </div>
+
+      <div class="platform-name">
+        Facebook
+      </div>
+
+      <div class="checkmark">
+        ✓
+      </div>
+    </label>
+
+    <!-- Instagram -->
+    <label class="platform-card">
+      <input type="checkbox" id="upload_ig" checked />
+
+      <div class="platform-icon ig">
+        <i class="fa-brands fa-instagram"></i>
+      </div>
+
+      <div class="platform-name">
+        Instagram
+      </div>
+
+      <div class="checkmark">
+        ✓
+      </div>
+    </label>
+
+  </div>
+</div>
+
+    <div class="token-section">
+      <div class="token-toggle" onclick="toggleTokenBody()">
+        <span>🔑 Token Meta (FB & IG)</span>
+        <span class="t-saved" id="token-saved" style="display:none">✓ Tersimpan</span>
+      </div>
+      <div class="token-body closed" id="token-body">
+        <div class="token-field">
+          <label>Facebook Page Token</label>
+          <input type="password" id="fb_token" placeholder="EAAxxxxxx..."/>
+        </div>
+        <div class="token-field">
+          <label>Instagram Page Token (sama dgn FB jika satu akun)</label>
+          <input type="password" id="ig_token" placeholder="EAAxxxxxx..."/>
+        </div>
+        <div class="token-field">
+          <label>App Secret <span style="color:var(--accent)">(untuk auto-refresh)</span></label>
+          <input type="password" id="app_secret" placeholder="abc123... (dari App Settings → Basic)"/>
+        </div>
+        <div style="font-size:10px;color:var(--muted);line-height:1.5">
+          Token disimpan di browser (localStorage) · Refresh tiap ~60 hari via Graph API Explorer<br>
+          FB Page ID: <code style="color:var(--accent)">1041901535683978</code> · IG ID: <code style="color:var(--accent)">17841422385439846</code>
+        </div>
+        <button class="token-save-btn" onclick="saveTokens()">💾 Simpan Token</button>
+      </div>
+    </div>
+
+    <button class="btn" id="submit-btn" onclick="submitForm()">
+      <span>▶</span> Generate & Post
+    </button>
+  </div>
+
+  <div class="progress-box" id="progress-box">
+    <div class="progress-header">
+      <div class="spinner" id="spinner"></div>
+      <span id="progress-label">Memproses...</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-bar" style="width:0%"></div></div>
+    <div class="progress-timeline" id="progress-timeline">
+      <div class="tl-step pending" id="tl-download">
+        <div class="tl-icon">⬇</div>
+        <div class="tl-body"><div class="tl-label">Download Video</div><div class="tl-msg" id="tl-download-msg">Menunggu...</div></div>
+      </div>
+      <div class="tl-step pending" id="tl-transcribe">
+        <div class="tl-icon">🎙</div>
+        <div class="tl-body"><div class="tl-label">Transkripsi Whisper</div><div class="tl-msg" id="tl-transcribe-msg">Menunggu...</div></div>
+      </div>
+      <div class="tl-step pending" id="tl-clip">
+        <div class="tl-icon">✂</div>
+        <div class="tl-body"><div class="tl-label">Clipping & Subtitle</div><div class="tl-msg" id="tl-clip-msg">Menunggu...</div></div>
+      </div>
+      <div class="tl-step pending" id="tl-mega">
+        <div class="tl-icon">☁</div>
+        <div class="tl-body"><div class="tl-label">Upload ke MEGA</div><div class="tl-msg" id="tl-mega-msg">Menunggu...</div></div>
+      </div>
+    </div>
+    <div class="log-area" id="log-area" style="display:none"></div>
+  </div>
+
+  <div class="clips-grid" id="clips-grid"></div>
+
+  <!-- STEP 2: Schedule per clip -->
+  <div class="step-wrap" id="step2-wrap">
+    <div class="steps-bar">
+      <div class="step-pill done">✓ Generate klip</div>
+      <div class="step-line"></div>
+      <div class="step-pill active">📅 Set jadwal</div>
+      <div class="step-line"></div>
+      <div class="step-pill wait">✉ Kirim ke Meta</div>
+    </div>
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px" id="s2-title">Klip siap — klik untuk expand & edit</div>
+    <div class="sel-all-row">
+      <span><span class="sel-count" id="sel-count">0</span> klip dipilih</span>
+      <button onclick="selectAllClips(true)">Pilih Semua</button>
+      <button onclick="selectAllClips(false)">Hapus Semua</button>
+    </div>
+    <div id="clip-cards-container"></div>
+    <button class="btn-confirm" id="confirm-btn" onclick="confirmSchedule()">
+      📅 Konfirmasi & Jadwalkan ke Meta
+    </button>
+  </div>
+
+  <!-- STEP 3: Results -->
+  <div class="step-wrap" id="step3-wrap">
+    <div class="steps-bar">
+      <div class="step-pill done">✓ Generate klip</div>
+      <div class="step-line"></div>
+      <div class="step-pill done">✓ Set jadwal</div>
+      <div class="step-line"></div>
+      <div class="step-pill active">✉ Terkirim ke Meta</div>
+    </div>
+    <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">Hasil penjadwalan</div>
+    <div id="res-container"></div>
+    <div id="retry-bar" style="display:none;margin-top:12px;display:none;gap:8px;flex-direction:column">
+      <button class="btn-retry" onclick="retryFailed()">🔁 Atur ulang klip yang gagal</button>
+      <button class="btn-retry secondary" onclick="retryAll()">↩ Kembali ke semua klip</button>
+    </div>
+    <div style="margin-top:12px;padding:10px 13px;border-radius:8px;background:rgba(0,229,176,.08);font-size:12px;color:var(--accent)">
+      ℹ Server lokal bisa dimatikan — Meta yang publish otomatis sesuai jadwal.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SERVER   = 'http://127.0.0.1:5680';
+const LAUNCHER = 'http://127.0.0.1:5679';
+let _clips = [];
+let _chkInt = null;
+
+// ── Server status ──────────────────────────────────────────────────────────
+async function checkServer(){
+  try{
+    const r=await fetch(SERVER+'/health',{signal:AbortSignal.timeout(2000)});
+    if(r.ok){
+      document.getElementById('srv-dot').className='srv-dot online';
+      document.getElementById('srv-txt').textContent='Server online ✅';
+      document.getElementById('srv-sub').textContent='Siap memproses video';
+      document.getElementById('btn-srv').textContent='🔄 Restart';
+      return true;
+    }
+  }catch(e){}
+  try{
+    await fetch(LAUNCHER+'/status',{signal:AbortSignal.timeout(1000)});
+    document.getElementById('srv-dot').className='srv-dot offline';
+    document.getElementById('srv-txt').textContent='Server offline';
+    document.getElementById('srv-sub').textContent='Klik Start Server — launcher siap';
+  }catch(e){
+    document.getElementById('srv-dot').className='srv-dot offline';
+    document.getElementById('srv-txt').textContent='Server offline';
+    document.getElementById('srv-sub').textContent='Jalankan setup_startup.bat lalu restart Windows';
+  }
+  document.getElementById('btn-srv').textContent='⚡ Start Server';
+  return false;
+}
+async function startServer(){
+  const btn=document.getElementById('btn-srv');
+  btn.className='btn-srv loading'; btn.textContent='⏳...';
+  try{
+    const r=await fetch(LAUNCHER+'/start',{method:'POST',signal:AbortSignal.timeout(4000)});
+    const d=await r.json();
+    if(d.ok){ pollServer(2000); }
+    else{ btn.className='btn-srv'; btn.textContent='⚡ Start Server'; }
+  }catch(e){ btn.className='btn-srv'; btn.textContent='⚡ Start Server'; pollServer(1500); }
+}
+function pollServer(ms){
+  if(_chkInt) clearInterval(_chkInt);
+  let t=0;
+  _chkInt=setInterval(async()=>{ t++;
+    const ok=await checkServer();
+    if(ok||t>30){ clearInterval(_chkInt); _chkInt=setInterval(checkServer,10000); }
+  },ms);
+}
+checkServer(); _chkInt=setInterval(checkServer,10000);
+
+// ── Slider ─────────────────────────────────────────────────────────────────
+function updateSlider(el){
+  const v=parseInt(el.value);
+  el.style.setProperty('--pct',v+'%');
+  document.getElementById('score-val').textContent=v;
+  document.getElementById('score-desc').textContent=
+    v===0?'Semua klip':v<50?'Standar':v<80?'Hanya klip bagus':'Sangat selektif';
+}
+
+// ── Mode toggles ───────────────────────────────────────────────────────────
+function toggleYtMode(el){
+  const op=el.checked?'0.3':'1', pe=el.checked?'none':'auto';
+  document.getElementById('platform-section').style.opacity=op;
+  document.getElementById('platform-section').style.pointerEvents=pe;
+  // Tampilkan MEGA tema selector saat YT Mode aktif
+  document.getElementById('mega-tema-row').style.display=el.checked?'flex':'none';
+  // Disable sched_mode kalau yt_mode aktif
+  if(el.checked){
+    document.getElementById('sched_mode').checked=false;
+    updateSchedBadge(false);
+  }
+  document.getElementById('sched-row').style.opacity=el.checked?'0.4':'1';
+  document.getElementById('sched-row').style.pointerEvents=el.checked?'none':'auto';
+}
+
+function toggleSchedMode(el){
+  updateSchedBadge(el.checked);
+  // Greying platform section saat sched aktif (tidak dipakai)
+  const op=el.checked?'0.3':'1', pe=el.checked?'none':'auto';
+  document.getElementById('platform-section').style.opacity=op;
+  document.getElementById('platform-section').style.pointerEvents=pe;
+}
+
+function updateSchedBadge(on){
+  const badge=document.getElementById('sched-badge');
+  badge.textContent=on?'Aktif':'Nonaktif';
+  badge.className='sched-badge'+(on?' on':'');
+  document.getElementById('sched-sub').textContent=on
+    ?'Proses dulu, lalu atur jadwal + caption per klip ke Meta'
+    :'Aktifkan untuk atur jadwal upload per klip ke Meta';
+}
+
+// ── Log ────────────────────────────────────────────────────────────────────
+function log(msg,cls='info'){
+  const area=document.getElementById('log-area');
+  const line=document.createElement('div');
+  line.className=cls; line.textContent=msg;
+  area.appendChild(line); area.scrollTop=area.scrollHeight;
+}
+
+// ── Token management ───────────────────────────────────────────────────────
+const FB_PAGE_ID = '1041901535683978';
+const IG_USER_ID = '17841422385439846';
+
+function loadTokens(){
+  const fb = localStorage.getItem('orca_fb_token')||'';
+  const ig = localStorage.getItem('orca_ig_token')||'';
+  const secret = localStorage.getItem('orca_app_secret')||'';
+  document.getElementById('fb_token').value = fb;
+  document.getElementById('ig_token').value = ig;
+  document.getElementById('app_secret').value = secret;
+  const saved = document.getElementById('token-saved');
+  if(fb||ig){ saved.style.display='inline'; } else { saved.style.display='none'; }
+  return {fb, ig, secret};
+}
+async function saveTokens(){
+  const fb = document.getElementById('fb_token').value.trim();
+  const ig = document.getElementById('ig_token').value.trim();
+  const secret = document.getElementById('app_secret').value.trim();
+  if(!fb&&!ig){alert('Isi minimal salah satu token!');return;}
+  // Simpan ke localStorage
+  localStorage.setItem('orca_fb_token', fb);
+  localStorage.setItem('orca_ig_token', ig||fb);
+  if(secret) localStorage.setItem('orca_app_secret', secret);
+  document.getElementById('token-saved').style.display='inline';
+  document.getElementById('token-body').className='token-body closed';
+  // Simpan ke server (orca_config.json) supaya auto-refresh bisa jalan
+  try {
+    await fetch(SERVER+'/save-tokens', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        fb_page_id: FB_PAGE_ID,
+        fb_page_token: fb,
+        ig_user_id: IG_USER_ID,
+        ig_page_token: ig||fb,
+        app_secret: secret,
+      })
+    });
+    alert('✅ Token tersimpan!');
+  } catch(e) {
+    alert('✅ Token tersimpan di browser. (Server offline — akan sync saat server aktif)');
+  }
+}
+function toggleTokenBody(){
+  const el=document.getElementById('token-body');
+  el.className=el.classList.contains('open')?'token-body closed':'token-body open';
+}
+function getTokens(){
+  return {
+    fb_page_id: FB_PAGE_ID,
+    fb_page_token: localStorage.getItem('orca_fb_token')||'',
+    ig_user_id: IG_USER_ID,
+    ig_page_token: localStorage.getItem('orca_ig_token')||'',
+    app_secret: localStorage.getItem('orca_app_secret')||'',
+  };
+}
+
+// ── Token status check & modal ─────────────────────────────────────────────
+function closeTokenModal(){ document.getElementById('token-modal').classList.add('hidden'); }
+
+async function checkTokenStatus(){
+  if(!localStorage.getItem('orca_fb_token')) return; // belum ada token, skip
+  try {
+    const res = await fetch(SERVER+'/token-status');
+    const data = await res.json();
+    if(data.status === 'ok'){
+      // Token sehat, tidak perlu notifikasi
+      console.log('[Token]', data.message);
+    } else if(data.status === 'refreshed'){
+      showTokenToast('✅ Token auto-refresh berhasil! '+data.message);
+      // Update localStorage dengan token baru (kalau server return token baru)
+    } else if(data.status === 'no_secret'){
+      showTokenModal('warning',
+        '⚙️ App Secret Belum Diset',
+        'Untuk aktifkan auto-refresh token, App Secret perlu diisi.',
+        `1. Klik section <b>🔑 Token Meta</b> di form<br>
+         2. Isi field <b>App Secret</b><br>
+         3. App Secret ada di: <a href="https://developers.facebook.com/apps/800167919632211/settings/basic/" target="_blank">Meta → orcaClip → Settings → Basic → App Secret</a><br>
+         4. Klik Simpan Token`
+      );
+    } else if(data.status === 'expired'){
+      showTokenModal('error',
+        '🔴 Token FB/IG Sudah Expired',
+        data.message,
+        `1. Buka <a href="https://developers.facebook.com/tools/explorer/" target="_blank">Graph API Explorer</a><br>
+         2. App: <b>orcaClip</b> · Pilih query: <code>1041901535683978?fields=access_token</code><br>
+         3. Submit → copy <code>access_token</code><br>
+         4. Extend ke long-lived token (lihat panduan di form)<br>
+         5. Paste token baru di section <b>🔑 Token Meta</b> → Simpan`
+      );
+    } else if(data.status === 'refresh_failed'){
+      showTokenModal('warning',
+        '⚠️ Auto-Refresh Token Gagal',
+        data.message,
+        `1. Buka <a href="https://developers.facebook.com/tools/explorer/" target="_blank">Graph API Explorer</a><br>
+         2. App: <b>orcaClip</b> · Query: <code>1041901535683978?fields=access_token</code><br>
+         3. Submit → copy <code>access_token</code><br>
+         4. Extend via:<br>
+         <code style="font-size:10px">graph.facebook.com/v25.0/oauth/access_token?grant_type=fb_exchange_token&client_id=800167919632211&client_secret=APP_SECRET&fb_exchange_token=TOKEN</code><br>
+         5. Paste token baru → Simpan`
+      );
+    }
+  } catch(e){
+    console.log('[Token] Server offline atau belum start');
+  }
+}
+
+function showTokenModal(type, title, msg, steps){
+  document.getElementById('modal-icon').textContent = type==='error'?'🔴':'⚠️';
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('modal-steps').innerHTML = steps;
+  document.getElementById('token-modal').classList.remove('hidden');
+}
+
+function showTokenToast(msg){
+  const t = document.createElement('div');
+  t.style.cssText='position:fixed;bottom:20px;right:20px;background:#00c97a;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,201,122,.3)';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 4000);
+}
+
+// ── 24h time picker helper ─────────────────────────────────────────────────
+function make24hPicker(id, defHour=19, defMin=0){
+  const hOpts = Array.from({length:24},(_,h)=>
+    `<option value="${h}" ${h===defHour?'selected':''}>${String(h).padStart(2,'0')}</option>`
+  ).join('');
+  const mOpts = [0,15,30,45].map(m=>
+    `<option value="${m}" ${m===defMin?'selected':''}>${String(m).padStart(2,'0')}</option>`
+  ).join('');
+  return `<div class="time-24h" id="${id}-wrap">
+    <select id="${id}-h" style="width:40px">${hOpts}</select>
+    <span class="t-sep">:</span>
+    <select id="${id}-m" style="width:40px">${mOpts}</select>
+  </div>`;
+}
+function getTime24h(id){
+  const h = document.getElementById(id+'-h')?.value;
+  const m = document.getElementById(id+'-m')?.value;
+  if(h==null||m==null) return null;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+
+// ── Progress Timeline Polling ──────────────────────────────────────────────
+let _progressInterval = null;
+const STEPS = ['download','transcribe','clip','mega','done'];
+
+function startProgressPolling(hasYtMode){
+  ['download','transcribe','clip','mega'].forEach(s=>setTlStep(s,'pending','Menunggu...'));
+  document.getElementById('tl-mega').style.display = hasYtMode ? 'flex' : 'none';
+  document.getElementById('prog-bar').style.width = '0%';
+
+  // Langsung aktifkan step Download tanpa tunggu poll
+  setTlStep('download','active','Memulai proses...');
+  document.getElementById('prog-bar').style.width = '2%';
+
+  if(_progressInterval) clearInterval(_progressInterval);
+  _progressInterval = setInterval(async ()=>{
+    try{
+      const r = await fetch(SERVER+'/progress');
+      if(!r.ok) return;
+      const d = await r.json();
+      if(!d||!d.step||d.step==='idle') return; // skip idle
+      updateTimeline(d);
+    } catch(e){
+      console.log('[Progress poll error]', e);
+    }
+  }, 2000);
+}
+
+function stopProgressPolling(){
+  if(_progressInterval){ clearInterval(_progressInterval); _progressInterval=null; }
+}
+
+function setTlStep(step, status, msg){
+  const el = document.getElementById('tl-'+step);
+  const msgEl = document.getElementById('tl-'+step+'-msg');
+  if(!el) return;
+  el.className = 'tl-step '+status;
+  if(msgEl) msgEl.textContent = msg || '';
+}
+
+function updateTimeline(d){
+  if(!d||!d.step) return;
+  const step = d.step;
+  const msg  = d.message || '';
+  const pct  = d.percent || 0;
+  const status = d.status || 'active';
+
+  document.getElementById('prog-bar').style.width = pct+'%';
+  document.getElementById('progress-label').textContent =
+    step==='done'      ? `✅ Selesai!` :
+    step==='error'     ? `❌ Error` :
+    step==='mega'      ? `☁️ Uploading ke MEGA...` :
+    step==='clip'      ? `✂️ Clipping...` :
+    step==='transcribe'? `🎙 Transkripsi Whisper...` :
+    step==='download'  ? `⬇️ ${msg||'Downloading...'}` :
+    step==='start'     ? `⏳ Mengambil info video...` : `⏳ Memproses...`;
+
+  // Alias: start → download
+  const effectiveStep = step === 'start' ? 'download' : step;
+
+  const stepOrder = ['download','transcribe','clip','mega'];
+  const curIdx = stepOrder.indexOf(effectiveStep);
+
+  if(step==='error'){
+    stepOrder.forEach(s=>{
+      const el = document.getElementById('tl-'+s);
+      if(!el) return;
+      if(el.className.includes('active')||el.className.includes('pending')){
+        if(el.className.includes('active')) setTlStep(s,'error', msg);
+      }
+    });
+    // Kalau tidak ada yang active, set download sebagai error
+    const anyActive = stepOrder.some(s=>document.getElementById('tl-'+s)?.className.includes('active'));
+    if(!anyActive) setTlStep('download','error', msg);
+    // Tampilkan pesan error di header
+    document.getElementById('progress-label').textContent = `❌ ${msg||'Terjadi error'}`;
+    stopProgressPolling();
+    return;
+  }
+
+  stepOrder.forEach((s,i)=>{
+    if(step==='done'||(step==='mega'&&s==='mega'&&status==='done')){
+      setTlStep(s,'done','✓ Selesai');
+    } else if(i < curIdx){
+      setTlStep(s,'done','✓ Selesai');
+    } else if(i===curIdx){
+      setTlStep(s, status==='done'?'done':'active', msg);
+    } else {
+      const cur = document.getElementById('tl-'+s)?.className||'';
+      if(!cur.includes('done')&&!cur.includes('active'))
+        setTlStep(s,'pending','Menunggu...');
+    }
+  });
+
+  if(step==='done'){ stopProgressPolling(); }
+}
+async function submitForm(){
+  const url=document.getElementById('url').value.trim();
+  if(!url){alert('Masukkan URL YouTube dulu!');return;}
+
+  const ytMode   =document.getElementById('yt_mode').checked;
+  const schedMode=document.getElementById('sched_mode').checked;
+
+  const payload={
+    url,
+    output_dir:'D:\\clips',
+    min_dur:parseInt(document.getElementById('min_dur').value),
+    max_dur:parseInt(document.getElementById('max_dur').value),
+    min_viral_score:parseInt(document.getElementById('viral_score').value),
+    yt_mode:ytMode,
+    tema: ytMode ? (document.getElementById('mega_tema').value||'') : '',
+    schedule_mode:schedMode,
+    upload_fb:!schedMode&&!ytMode&&document.getElementById('upload_fb').checked,
+    upload_ig:!schedMode&&!ytMode&&document.getElementById('upload_ig').checked,
+    ...getTokens(),
+  };
+
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Memproses...';
+  document.getElementById('progress-box').classList.add('show');
+  startProgressPolling(ytMode);
+  document.getElementById('clips-grid').classList.remove('show');
+  document.getElementById('step2-wrap').style.display='none';
+  document.getElementById('step3-wrap').style.display='none';
+  document.getElementById('log-area').innerHTML='';
+  document.getElementById('clips-grid').innerHTML='';
+
+  log('→ Mengirim request ke server...','info');
+  log('  URL   : '+url,'info');
+  log('  Durasi: '+payload.min_dur+'-'+payload.max_dur+'s','info');
+  log('  Score : ≥'+payload.min_viral_score,'info');
+  log('  Mode  : '+(ytMode?'YT Mode':schedMode?'Jadwal per klip':'Upload langsung'),'info');
+
+  try{
+    const res=await fetch(SERVER+'/clip',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(data.code===2000){
+      const n=data.videos?.length||0;
+      log('✅ Selesai! '+n+' klip dihasilkan','ok');
+      document.getElementById('progress-label').textContent='✅ Selesai — '+n+' klip';
+      document.getElementById('spinner').style.display='none';
+      if(schedMode){ showScheduleStep(data.videos||[]); }
+      else { showClips(data.videos||[], ytMode); }
+    } else {
+      log('❌ Error: '+(data.errMsg||data.message),'err');
+      document.getElementById('progress-label').textContent='❌ Gagal';
+      document.getElementById('spinner').style.display='none';
+    }
+  }catch(e){
+    log('❌ Tidak bisa konek ke server: '+e.message,'err');
+    document.getElementById('progress-label').textContent='❌ Server offline';
+    document.getElementById('spinner').style.display='none';
+  }
+  btn.disabled=false; btn.innerHTML='<span>▶</span> Generate & Post';
+}
+
+// ── Immediate result ────────────────────────────────────────────────────────
+function showClips(videos,ytMode){
+  const grid=document.getElementById('clips-grid');
+  grid.innerHTML='';
+  videos.forEach((v,i)=>{
+    const fb=v.facebookUpload?.success, ig=v.instagramUpload?.success;
+    const mega=v.megaUpload;
+    const megaBadge=mega
+      ?(mega.success
+        ?`<span class="badge ok" title="${mega.folder||'MEGA'}">☁️ MEGA</span>`
+        :`<span class="badge err" title="${mega.msg||'Gagal'}">☁️ Gagal</span>`)
+      :'';
+    grid.innerHTML+=`<div class="clip-card">
+      <div class="clip-score">${v.viralScore}</div>
+      <div class="clip-info">
+        <div class="clip-title">${v.title||'Clip '+(i+1)}</div>
+        <div class="clip-meta">${Math.round(v.clipDurationSec||0)}s · clip_${String(i+1).padStart(3,'0')}.mp4</div>
+      </div>
+      <div class="clip-status">
+        ${ytMode
+          ?(megaBadge||'<span class="badge skip">Local</span>')
+          :`<span class="badge ${fb?'ok':'err'}">FB</span><span class="badge ${ig?'ok':'err'}">IG</span>`}
+      </div></div>`;
+  });
+  grid.classList.add('show');
+}
+
+// ── Game keyword → hashtag mapping ────────────────────────────────────────
+const GAME_HASHTAGS = {
+  // Base gaming podcast (selalu ada)
+  _base: ['#gaming','#podcast','#podcastgaming','#indogamer','#gamingpodcast','#podcastindonesia','#gamingcommunity'],
+
+  // Game spesifik
+  'valorant':         ['#valorant','#valorantindonesia','#valo','#valorantid'],
+  'mobile legends':   ['#mobilelegends','#mlbb','#mlbbindonesia','#mobilelegendsbangbang'],
+  'mlbb':             ['#mobilelegends','#mlbb','#mlbbindonesia'],
+  'free fire':        ['#freefire','#freefireindonesia','#ff','#garena'],
+  'freefire':         ['#freefire','#freefireindonesia','#ff'],
+  'pubg':             ['#pubg','#pubgmobile','#pubgindonesia','#battlegrounds'],
+  'minecraft':        ['#minecraft','#minecraftindonesia','#mcpe','#minecraftbuilds'],
+  'genshin':          ['#genshinimpact','#genshin','#genshinimpactindonesia'],
+  'roblox':           ['#roblox','#robloxindonesia','#robloxgame'],
+  'honkai':           ['#honkaistarrail','#honkai','#starrail'],
+  'star rail':        ['#honkaistarrail','#starrail'],
+  'apex':             ['#apexlegends','#apex','#apexindonesia'],
+  'fortnite':         ['#fortnite','#fortniteindonesia','#fn'],
+  'league of legends':['#leagueoflegends','#lol','#lolindonesia'],
+  'dota':             ['#dota2','#dota','#dotaindonesia'],
+  'overwatch':        ['#overwatch','#overwatch2','#ow2'],
+  'call of duty':     ['#callofduty','#cod','#warzone'],
+  'warzone':          ['#warzone','#callofduty','#cod'],
+  'fifa':             ['#fifa','#eafc','#fifaindonesia'],
+  'ea fc':            ['#eafc','#fifa','#fifaindonesia'],
+  'elden ring':       ['#eldenring','#fromsoftware','#soulslike'],
+  'gta':              ['#gta','#grandtheftauto','#gta5'],
+  'cs2':              ['#cs2','#counterstrike','#csgo'],
+  'csgo':             ['#csgo','#cs2','#counterstrike'],
+  'tekken':           ['#tekken','#tekken8','#fightinggame'],
+  'street fighter':   ['#streetfighter','#sf6','#fightinggame'],
+  'pokemon':          ['#pokemon','#pokemonindonesia'],
+  'among us':         ['#amongus','#crewmate'],
+  'stardew':          ['#stardewvalley','#stardew','#indiegame'],
+  'terraria':         ['#terraria','#indiegame'],
+  'hollow knight':    ['#hollowknight','#indiegame','#soulslike'],
+  'indie':            ['#indiegame','#indiegames','#indiegamedev'],
+  'esport':           ['#esports','#esportsindonesia','#kompetitif'],
+  'tournament':       ['#tournament','#esports','#kompetitif'],
+  'turnamen':         ['#turnamen','#esportsindonesia','#kompetitif'],
+};
+
+function detectGameHashtags(caption){
+  const text = caption.toLowerCase();
+  const result = new Set(GAME_HASHTAGS._base);
+  for(const [keyword, tags] of Object.entries(GAME_HASHTAGS)){
+    if(keyword === '_base') continue;
+    if(text.includes(keyword)){
+      tags.forEach(t => result.add(t));
+    }
+  }
+  return [...result];
+}
+function updateSelCount(){
+  const total=_clips.length;
+  const sel=document.querySelectorAll('.clip-sel-cb:checked').length;
+  document.getElementById('sel-count').textContent=sel+'/'+total;
+}
+function onClipSelChange(i){
+  const checked=document.getElementById('sel-'+i).checked;
+  document.getElementById('scard-'+i).classList.toggle('unselected',!checked);
+  updateSelCount();
+}
+function selectAllClips(val){
+  _clips.forEach((_,i)=>{
+    const cb=document.getElementById('sel-'+i);
+    if(cb){cb.checked=val; document.getElementById('scard-'+i).classList.toggle('unselected',!val);}
+  });
+  updateSelCount();
+}
+
+function showScheduleStep(videos){
+  _clips=videos;
+  document.getElementById('s2-title').textContent=videos.length+' klip siap — pilih & atur jadwal';
+  const container=document.getElementById('clip-cards-container');
+  container.innerHTML='';
+  const pad=n=>String(n).padStart(2,'0');
+  const today=new Date();
+  const todayStr=`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+
+  videos.forEach((v,i)=>{
+    // Baca caption dari _caption (server load dari .txt) atau fallback
+    const rawCap=v._caption||v.caption||v.title||'';
+    // Ekstrak semua hashtag dari seluruh teks
+    const captionHashtags=[...new Set((rawCap.match(/#[\w\u00C0-\u024F\u0600-\u06FF]+/g)||[]))];
+    // Deteksi game dari caption → tambah hashtag otomatis
+    const gameHashtags = detectGameHashtags(rawCap);
+    // Gabung: caption hashtag + game hashtag (deduplicated)
+    const allHashtags=[...new Set([...captionHashtags, ...gameHashtags])];
+    // Caption = baris yang bukan murni baris hashtag
+    const capOnly=rawCap.split('\n')
+      .filter(l=>!l.trim().match(/^(#[\w\u00C0-\u024F\u0600-\u06FF]+[\s,]*)+$/))
+      .join('\n').trim();
+
+    const div=document.createElement('div');
+    div.className='scard'; div.id='scard-'+i;
+    div.innerHTML=`
+      <div class="scard-head" onclick="toggleCard(${i},event)">
+        <div class="clip-sel-wrap" onclick="event.stopPropagation()">
+          <input type="checkbox" class="clip-sel-cb" id="sel-${i}" checked onchange="onClipSelChange(${i})"/>
+        </div>
+        <span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);flex-shrink:0;padding-top:2px">${v.viralScore}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${v.title||'Clip '+(i+1)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">clip_${String(i+1).padStart(3,'0')}.mp4 · ${Math.round(v.clipDurationSec||0)}s</div>
+        </div>
+        <span class="chev" id="chev-${i}">▾</span>
+      </div>
+      <div class="scard-body" id="sbody-${i}">
+        <div class="sc-lbl">Caption / Reel Details</div>
+        <textarea class="sc-ta" id="cap-${i}" maxlength="2200" rows="4" oninput="countCap(${i})">${capOnly}</textarea>
+        <div class="char-info"><span id="cc-${i}">${capOnly.length}</span>/2200</div>
+
+        <div class="sc-div"></div>
+
+        <div class="sc-lbl">Tags / Hashtag</div>
+        <div class="tags-box" id="tags-${i}" onclick="document.getElementById('tinp-${i}').focus()">
+          <input class="tinp" id="tinp-${i}" placeholder="Ketik tag lalu Enter..." onkeydown="addTag(event,${i})"/>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">Ketik lalu tekan Enter · tanpa tanda # · klik × untuk hapus</div>
+
+        <div class="sc-div"></div>
+
+        <div class="sc-lbl">Jadwal Upload</div>
+        <div class="plat-row">
+          <input type="checkbox" id="fb-cb-${i}" style="width:14px;height:14px;margin:0;cursor:pointer" onchange="toggleDt('fb',${i})"/>
+          <div class="plat-ico fb"><i class="fa-brands fa-facebook-f"></i></div>
+          <span style="font-size:12px;font-weight:500" id="fb-lbl-${i}">Facebook</span>
+          <div class="dt-grp" id="fb-dt-${i}" style="opacity:.3;pointer-events:none">
+            <input type="date" id="fb-date-${i}" value="${todayStr}"/>
+            ${make24hPicker('fb-time-'+i, 19, 0)}
+          </div>
+        </div>
+        <div class="plat-row">
+          <input type="checkbox" id="ig-cb-${i}" style="width:14px;height:14px;margin:0;cursor:pointer" onchange="toggleDt('ig',${i})"/>
+          <div class="plat-ico ig"><i class="fa-brands fa-instagram"></i></div>
+          <span style="font-size:12px;font-weight:500" id="ig-lbl-${i}">Instagram</span>
+          <div class="dt-grp" id="ig-dt-${i}" style="opacity:.3;pointer-events:none">
+            <input type="date" id="ig-date-${i}" value="${todayStr}"/>
+            ${make24hPicker('ig-time-'+i, 20, 0)}
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(div);
+    allHashtags.forEach(t=>addChip(i,t));
+    if(i===0) toggleCard(0,null);
+  });
+
+  updateSelCount();
+  document.getElementById('step2-wrap').style.display='block';
+  document.getElementById('progress-box').classList.remove('show');
+  stopProgressPolling();
+  document.getElementById('step2-wrap').scrollIntoView({behavior:'smooth'});
+}
+
+function toggleCard(i,e){
+  if(e&&e.target&&e.target.classList.contains('clip-sel-cb'))return;
+  const b=document.getElementById('sbody-'+i);
+  const c=document.getElementById('chev-'+i);
+  const open=b.classList.contains('open');
+  b.classList.toggle('open',!open);
+  c.style.transform=open?'':'rotate(180deg)';
+}
+
+function countCap(i){ document.getElementById('cc-'+i).textContent=document.getElementById('cap-'+i).value.length; }
+
+function toggleDt(p,i){
+  const cb=document.getElementById(p+'-cb-'+i);
+  const dt=document.getElementById(p+'-dt-'+i);
+  const lbl=document.getElementById(p+'-lbl-'+i);
+  dt.style.opacity=cb.checked?'1':'0.3';
+  dt.style.pointerEvents=cb.checked?'auto':'none';
+  lbl.style.color=cb.checked?'var(--text)':'var(--muted)';
+}
+
+function addChip(i,tag){
+  const wrap=document.getElementById('tags-'+i);
+  const inp=document.getElementById('tinp-'+i);
+  const chip=document.createElement('span');
+  chip.className='tchip'; chip.dataset.tag=tag;
+  chip.innerHTML=tag+' <span class="trm" onclick="this.parentElement.remove()">×</span>';
+  wrap.insertBefore(chip,inp);
+}
+
+function addTag(e,i){
+  if(e.key!=='Enter'&&e.key!==',')return;
+  e.preventDefault();
+  const inp=document.getElementById('tinp-'+i);
+  let v=inp.value.trim().replace(/^#+/,'');
+  if(!v)return;
+  addChip(i,'#'+v);
+  inp.value='';
+}
+
+// ── STEP 3: Confirm & send ─────────────────────────────────────────────────
+let _titleMap = {}; // map clip filename → judul
+
+async function confirmSchedule(){
+  const btn=document.getElementById('confirm-btn');
+
+  // Kumpulkan hanya klip yang dicentang
+  _titleMap = {};
+  const clips=_clips.map((v,i)=>{
+    const selCb=document.getElementById('sel-'+i);
+    if(!selCb||!selCb.checked)return null;
+    const fbCb=document.getElementById('fb-cb-'+i);
+    const igCb=document.getElementById('ig-cb-'+i);
+    const cap=document.getElementById('cap-'+i).value.trim();
+    const tags=[...document.querySelectorAll('#tags-'+i+' .tchip')].map(t=>t.dataset.tag);
+    const fullCap=cap+(tags.length?'\n\n'+tags.join(' '):'');
+    const toUnix=(dateId,timeId)=>{
+      const d=document.getElementById(dateId)?.value;
+      const t=getTime24h(timeId);
+      return (d&&t)?Math.floor(new Date(d+'T'+t).getTime()/1000):null;
+    };
+    // Judul: dari v.title, atau baris pertama caption, atau fallback
+    const title = (v.title||'').trim()
+      || cap.split('\n')[0].trim()
+      || ('Clip '+(i+1));
+    // Simpan di map untuk dipakai showResults
+    const fname = v.videoUrl ? v.videoUrl.split('\\').pop().split('/').pop() : ('clip_'+String(i+1).padStart(3,'0')+'.mp4');
+    _titleMap[fname] = title;
+    return{
+      video_path:v.videoUrl,
+      title,
+      caption:fullCap,
+      fb_schedule:fbCb?.checked?toUnix('fb-date-'+i,'fb-time-'+i):null,
+      ig_schedule:igCb?.checked?toUnix('ig-date-'+i,'ig-time-'+i):null,
+    };
+  }).filter(Boolean);
+
+  if(!clips.length){alert('Pilih minimal 1 klip untuk dijadwalkan!');return;}
+  btn.disabled=true; btn.textContent='⏳ Mengirim ke Meta...';
+
+  try{
+    const res=await fetch(SERVER+'/schedule-upload',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({clips, ...getTokens()})
+    });
+    const data=await res.json();
+    showResults(data.results||[]);
+  }catch(e){
+    alert('Gagal kirim ke server: '+e.message);
+    btn.disabled=false;
+    btn.textContent='📅 Konfirmasi & Jadwalkan ke Meta';
+  }
+}
+
+let _lastResults = []; // simpan hasil terakhir untuk retry
+
+function showResults(results){
+  _lastResults = results;
+  document.getElementById('step2-wrap').style.display='none';
+  const container=document.getElementById('res-container');
+  container.innerHTML='';
+  const hasFail = results.some(r=>!r.success);
+  results.forEach(r=>{
+    const ok=r.success;
+    const platName=r.platform==='fb'?'Facebook':'Instagram';
+    const label = r.title || _titleMap[r.clip] || r.clip || 'Clip';
+    const sub=ok
+      ?(r.post_id?`${r.scheduled_time||'Terjadwal'} · <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent)">${r.post_id}</span>`:r.scheduled_time||'Terjadwal')
+      :(r.error||'Gagal');
+    container.innerHTML+=`<div class="res-item">
+      <div class="ri ${ok?'ok':'err'}">${ok?'✓':'✗'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label} · ${platName}</div>
+        <div style="color:var(--muted);margin-top:1px;font-size:11px">${sub}</div>
+      </div>
+    </div>`;
+  });
+  // Tampilkan tombol retry hanya kalau ada yang gagal
+  const retryBar = document.getElementById('retry-bar');
+  if(hasFail){
+    retryBar.style.display='flex';
+  } else {
+    retryBar.style.display='none';
+  }
+  document.getElementById('step3-wrap').style.display='block';
+  document.getElementById('step3-wrap').scrollIntoView({behavior:'smooth'});
+}
+
+function retryFailed(){
+  // Cari clip yang gagal, uncheck yang berhasil
+  const failedClips = new Set(_lastResults.filter(r=>!r.success).map(r=>r.clip));
+  _clips.forEach((_,i)=>{
+    const cb = document.getElementById('sel-'+i);
+    const fname = _clips[i].videoUrl ? _clips[i].videoUrl.split('\\').pop().split('/').pop() : '';
+    if(cb){
+      const shouldSelect = failedClips.has(fname);
+      cb.checked = shouldSelect;
+      document.getElementById('scard-'+i).classList.toggle('unselected', !shouldSelect);
+    }
+  });
+  _backToStep2();
+}
+
+function retryAll(){
+  // Kembalikan semua clip ke status checked
+  selectAllClips(true);
+  _backToStep2();
+}
+
+function _backToStep2(){
+  document.getElementById('step3-wrap').style.display='none';
+  document.getElementById('step2-wrap').style.display='block';
+  // Reset confirm button
+  const btn=document.getElementById('confirm-btn');
+  btn.disabled=false;
+  btn.textContent='📅 Konfirmasi & Jadwalkan ke Meta';
+  document.getElementById('step2-wrap').scrollIntoView({behavior:'smooth'});
+}
+
+// Init
+updateSlider(document.getElementById('viral_score'));
+loadTokens();
+setTimeout(checkTokenStatus, 1500); // cek token 1.5 detik setelah load
+</script>
+<!-- Token Alert Modal -->
+<div class="modal-overlay hidden" id="token-modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <div class="modal-title" id="modal-title">Token Perlu Diperbarui</div>
+    <div class="modal-msg" id="modal-msg"></div>
+    <div class="modal-steps" id="modal-steps"></div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="closeTokenModal()">Tutup</button>
+      <button class="modal-btn primary" onclick="window.open('https://developers.facebook.com/tools/explorer/','_blank')">Buka Graph API Explorer</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

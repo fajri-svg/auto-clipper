@@ -1,69 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy & Terms of Service — OrcaClip</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #333; line-height: 1.6; }
-    h1 { color: #1a1a2e; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    h2 { color: #16213e; margin-top: 30px; }
-    a { color: #0066cc; }
-    .last-updated { color: #888; font-size: 0.9em; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Privacy Policy — OrcaClip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#05070d;--surface:#0b0e17;--border:#1a2035;--accent:#00e5b0;--text:#e8eaf0;--muted:#5a6280}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.7}
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 40px;background:var(--surface);border-bottom:1px solid var(--border);
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;text-decoration:none;color:var(--text)}
+.logo span{color:var(--accent)}
+.nav-back{color:var(--muted);text-decoration:none;font-size:13px;transition:color .2s}
+.nav-back:hover{color:var(--accent)}
+.container{max-width:760px;margin:0 auto;padding:60px 24px 100px}
+.doc-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.doc-tag{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;font-weight:600}
+.doc-title{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:12px}
+.doc-date{font-size:13px;color:var(--muted)}
+h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin:40px 0 12px;color:var(--accent)}
+p{color:#b0b8d0;font-size:15px;margin-bottom:16px}
+ul{padding-left:20px;margin-bottom:16px}
+ul li{color:#b0b8d0;font-size:15px;margin-bottom:8px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.highlight{
+  background:rgba(0,229,176,.06);border:1px solid rgba(0,229,176,.15);
+  border-radius:10px;padding:20px 24px;margin:24px 0;font-size:14px;color:#b0b8d0;
+}
+footer{background:var(--surface);border-top:1px solid var(--border);padding:32px 40px;text-align:center;font-size:13px;color:var(--muted)}
+footer a{color:var(--accent);margin:0 12px;text-decoration:none}
+</style>
 </head>
 <body>
+<nav>
+  <a href="index.html" class="logo">Orca<span>Clip</span></a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
+</nav>
 
-  <h1>🎬 OrcaClip — Privacy Policy & Terms of Service</h1>
-  <p class="last-updated">Last updated: May 9, 2026</p>
+<div class="container">
+  <div class="doc-header">
+    <div class="doc-tag">Legal</div>
+    <h1 class="doc-title">Privacy Policy</h1>
+    <div class="doc-date">Last updated: May 30, 2026</div>
+  </div>
+
+  <div class="highlight">
+    This Privacy Policy describes how <strong>OrcaClip</strong> ("we", "our", or "the application") collects, uses, and handles information when you use our content automation platform.
+  </div>
 
   <h2>1. About OrcaClip</h2>
-  <p>OrcaClip is an automated video clipping tool that processes publicly available YouTube videos into short-form vertical clips with auto-generated subtitles. Content is only clipped from videos where the original creator has given permission.</p>
+  <p><strong>OrcaClip</strong> is a content creation platform that helps creators automatically download YouTube videos, generate short-form clips with AI-powered viral scoring, add subtitles, and schedule them to social media platforms including Facebook, Instagram, and TikTok.</p>
 
-  <h2>2. Privacy Policy</h2>
-
-  <h3>2.1 Data We Collect</h3>
-  <p>OrcaClip does <strong>not</strong> collect, store, or share any personal data from users or viewers. The tool operates locally on the user's own machine.</p>
-
-  <h3>2.2 Third-Party Services</h3>
-  <p>OrcaClip uses the following third-party services:</p>
+  <h2>2. Information We Collect</h2>
+  <p>OrcaClip collects and processes the following types of information:</p>
   <ul>
-    <li><strong>YouTube / yt-dlp</strong> — to download source videos (public content only)</li>
-    <li><strong>Facebook Graph API</strong> — to publish clips to the OrcaClip Facebook Page</li>
-    <li><strong>TikTok API</strong> — to publish clips to the OrcaClip TikTok account</li>
-  </ul>
-  <p>These services have their own privacy policies. We do not share any user data with them beyond what is required for content publishing.</p>
-
-  <h3>2.3 Cookies</h3>
-  <p>OrcaClip does not use cookies or tracking technologies.</p>
-
-  <h3>2.4 Data Retention</h3>
-  <p>No personal data is retained. Video clips are stored locally and are not shared with third parties beyond the publishing platforms listed above.</p>
-
-  <h2>3. User Data Deletion</h2>
-  <p>OrcaClip does not store any user data. If you would like to request deletion of any content posted by OrcaClip, please contact us at the email below and we will remove it within 7 business days.</p>
-  <p>Contact: <a href="mailto:mfajriaushaf@gmail.com">mfajriaushaf@gmail.com</a></p>
-
-  <h2>4. Terms of Service</h2>
-
-  <h3>4.1 Content Usage</h3>
-  <p>OrcaClip only reposts content from creators who have explicitly given permission. Credit is always given to the original creator in the post caption.</p>
-
-  <h3>4.2 Copyright</h3>
-  <p>We respect intellectual property rights. If you believe your content has been used without permission, please contact us immediately at <a href="mailto:mfajriaushaf@gmail.com">mfajriaushaf@gmail.com</a> and we will remove the content promptly.</p>
-
-  <h3>4.3 Disclaimer</h3>
-  <p>OrcaClip is a personal automation tool. We are not responsible for any changes in third-party platform APIs or policies that may affect functionality.</p>
-
-  <h2>5. Contact</h2>
-  <p>For any questions, requests, or concerns:</p>
-  <ul>
-    <li>Email: <a href="mailto:mfajriaushaf@gmail.com">mfajriaushaf@gmail.com</a></li>
-    <li>GitHub: <a href="https://github.com/fajri-svg/auto-clipper">https://github.com/fajri-svg/auto-clipper</a></li>
+    <li><strong>Social media access tokens</strong> — Facebook Page tokens and Instagram access tokens provided by the user through Meta's Graph API, stored locally on the user's device in <code>orca_config.json</code>.</li>
+    <li><strong>TikTok access tokens</strong> — OAuth 2.0 access tokens obtained through TikTok's official login flow, stored locally on the user's device.</li>
+    <li><strong>YouTube video URLs</strong> — URLs entered by the user to process and clip content.</li>
+    <li><strong>Video content</strong> — Downloaded video files processed locally on the user's device.</li>
+    <li><strong>Caption and hashtag data</strong> — Text generated or edited by the user for social media posts.</li>
   </ul>
 
-  <hr>
-  <p style="text-align:center; color:#888; font-size:0.85em;">© 2026 OrcaClip. All rights reserved.</p>
+  <h2>3. How We Use Your Information</h2>
+  <p>OrcaClip uses the collected information exclusively to:</p>
+  <ul>
+    <li>Download and process YouTube videos as directed by the user</li>
+    <li>Generate short-form video clips with subtitles and hook text</li>
+    <li>Upload and schedule video content to Facebook Pages via the Meta Graph API</li>
+    <li>Upload and schedule video content to Instagram accounts via the Meta Graph API</li>
+    <li>Upload and schedule video content to TikTok accounts via the TikTok Content Posting API</li>
+    <li>Back up processed clips to the user's personal MEGA cloud storage</li>
+    <li>Log clip activity to Google Sheets as configured by the user</li>
+  </ul>
 
+  <h2>4. Data Storage</h2>
+  <p>OrcaClip operates primarily as a <strong>local application</strong>. All processing occurs on the user's own device. We do not operate central servers that store your personal data, videos, or social media tokens.</p>
+  <ul>
+    <li>Access tokens are stored locally in <code>orca_config.json</code> on the user's Windows machine</li>
+    <li>Processed video clips are stored locally in the user's designated output directory</li>
+    <li>No data is transmitted to OrcaClip's servers beyond what is necessary to operate the application interface</li>
+  </ul>
+
+  <h2>5. Third-Party Services</h2>
+  <p>OrcaClip integrates with the following third-party services. Their respective privacy policies govern how they handle your data:</p>
+  <ul>
+    <li><strong>Meta (Facebook & Instagram)</strong> — <a href="https://www.facebook.com/privacy/policy/" target="_blank">Meta Privacy Policy</a></li>
+    <li><strong>TikTok</strong> — <a href="https://www.tiktok.com/legal/privacy-policy" target="_blank">TikTok Privacy Policy</a></li>
+    <li><strong>YouTube / Google</strong> — <a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a></li>
+    <li><strong>MEGA</strong> — <a href="https://mega.io/privacy" target="_blank">MEGA Privacy Policy</a></li>
+  </ul>
+
+  <h2>6. TikTok Data Usage</h2>
+  <p>When using OrcaClip with TikTok, we access the following TikTok API scopes on your behalf:</p>
+  <ul>
+    <li><code>video.upload</code> — To upload video content to your TikTok account</li>
+    <li><code>video.publish</code> — To publish or schedule uploaded videos</li>
+  </ul>
+  <p>OrcaClip does not access, store, or share your TikTok profile data, followers, comments, messages, or any data beyond what is necessary to post and schedule videos on your behalf. Your TikTok access token is stored only on your local device and is never transmitted to OrcaClip's servers.</p>
+
+  <h2>7. Data Sharing</h2>
+  <p>OrcaClip does <strong>not</strong> sell, trade, or share your personal data, access tokens, or content with any third parties, except as required to operate the social media posting features described above (i.e., transmitting your content to the respective platform APIs as directed by you).</p>
+
+  <h2>8. Data Retention</h2>
+  <p>OrcaClip does not retain user data on any central server. Local files (clips, tokens, logs) remain on the user's device and can be deleted at any time. Access tokens can be revoked at any time through the respective platform's settings.</p>
+
+  <h2>9. Your Rights</h2>
+  <p>You may at any time:</p>
+  <ul>
+    <li>Revoke OrcaClip's access to your Facebook/Instagram account via <a href="https://www.facebook.com/settings?tab=applications" target="_blank">Facebook App Settings</a></li>
+    <li>Revoke OrcaClip's access to your TikTok account via TikTok's Connected Apps settings</li>
+    <li>Delete all local data by removing the OrcaClip application files from your device</li>
+  </ul>
+
+  <h2>10. Children's Privacy</h2>
+  <p>OrcaClip is not directed at children under the age of 13. We do not knowingly collect personal information from children under 13.</p>
+
+  <h2>11. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. We will notify users of material changes by updating the "Last updated" date at the top of this page.</p>
+
+  <h2>12. Contact</h2>
+  <p>If you have any questions about this Privacy Policy or OrcaClip's data practices, please contact us at: <a href="mailto:ihatemyself.f2u@gmail.com">ihatemyself.f2u@gmail.com</a></p>
+</div>
+
+<footer>
+  <a href="index.html">Home</a>
+  <a href="privacy-policy.html">Privacy Policy</a>
+  <a href="terms-of-service.html">Terms of Service</a>
+  <br/><br/>© 2026 OrcaClip. All rights reserved.
+</footer>
 </body>
 </html>

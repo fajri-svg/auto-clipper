@@ -5,11 +5,14 @@ echo   (n8n Windows - Tanpa Docker!)
 echo ========================================
 echo.
 
-echo [1/2] Menjalankan Clipper Server...
+echo [1/3] Menjalankan Clipper Server...
 start "Clipper Server" cmd /k "python D:\Tools\n8n_scripts\clipper_server.py"
 
-echo [2/2] Menjalankan n8n...
+echo [2/3] Menjalankan n8n...
 start "n8n" cmd /k "n8n start"
+
+echo [3/3] Menjalankan MEGAcmd Server...
+start "MEGAcmd" "C:\Users\mfajr\AppData\Local\MEGAcmd\MEGAcmdShell.exe"
 
 echo.
 echo ========================================
